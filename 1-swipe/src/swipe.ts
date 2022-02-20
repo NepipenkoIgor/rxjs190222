@@ -1,6 +1,6 @@
 import { filter, map, Observable, zip, merge, fromEvent } from 'rxjs';
 
-function getX(source$: Observable<MouseEvent | TouchEvent>) {
+export function getX(source$: Observable<MouseEvent | TouchEvent>) {
 	return source$.pipe(
 		map((event: MouseEvent | TouchEvent) => {
 			if (event instanceof MouseEvent) {
@@ -27,7 +27,7 @@ const up$ = getX(
 // 	mergeWith(fromEvent<TouchEvent>(document, 'touchend')),
 // ),
 
-function swipe(source$: Observable<[number, number]>): Observable<number> {
+export function swipe(source$: Observable<[number, number]>): Observable<number> {
 	return source$.pipe(
 		map(([starX, endX]) => {
 			return endX - starX;
