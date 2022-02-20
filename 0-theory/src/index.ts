@@ -1,26 +1,51 @@
 import '../../assets/css/style.css';
 import { terminalLog } from '../../utils/log-in-terminal';
-import { exhaustMap, fromEvent, pluck } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { interval, share } from 'rxjs';
 
 terminalLog('Теория');
 
-const sequence$ = fromEvent(document.querySelector('input')!, 'input').pipe(
-	exhaustMap((event) => {
-		const text = (event.target as HTMLInputElement).value;
-		return ajax({
-			url: `http://learn.javascript.ru/courses/groups/api/participants?key=198pddy&text=${text}`,
-			crossDomain: true,
-			method: 'GET',
-		}).pipe(pluck('response'));
+/*
+ multicast + subject => publish connectable observable
+ publish + refCount => regular observable => share
+ */
+
+// const subject = new BehaviorSubject(-1);
+// const sequence$ = interval(1000).pipe(
+// 	// multicast(subject),
+// 	// publish(),
+// 	// refCount(),
+// 	share(),
+// );
+//
+// const sequence$ = connectable(interval(1000), {
+// 	connector: () => new Subject(),
+// });
+// sequence$.connect();
+
+const sequence$ = interval(1000).pipe(
+	share({
+		resetOnError: false,
+		resetOnComplete: false,
+		resetOnRefCountZero: true,
 	}),
-	// map + switchAll => switchMap
-	// map + concatAll => concatMap
-	// map + mergeAll => mergeMap
-	// map + mergeAll => mergeMap
-	// exhaust + exhaustAll => exhaustMap
 );
 
-sequence$.subscribe((v) => {
-	console.log('Sub ===>', v);
+// as ConnectableObservable<any>;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+//@ts-ignore
+const sub = sequence$.subscribe((v) => {
+	terminalLog(`Sub 1 ===> ${v}`);
 });
+
+// sequence$.connect();
+
+setTimeout(() => {
+	sub.unsubscribe();
+}, 4000);
+
+setTimeout(() => {
+	sequence$.subscribe((v) => {
+		terminalLog(`Sub 2 ===> ${v}`);
+	});
+}, 5000);

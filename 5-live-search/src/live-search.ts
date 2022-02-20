@@ -1,8 +1,10 @@
 import {
 	bufferCount,
+	catchError,
 	concatAll,
 	debounceTime,
 	distinctUntilChanged,
+	EMPTY,
 	filter,
 	map,
 	Observable,
@@ -67,6 +69,10 @@ export function requestToHtmlStr(source$: Observable<AjaxResponse<{ items: IResu
 			return newStr;
 		}, ''),
 		map((html: string) => html.trim().replace(/\s+(<)/g, '<')),
+		catchError((err) => {
+			console.log(err);
+			return EMPTY; //of('N');
+		}),
 	);
 }
 

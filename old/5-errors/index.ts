@@ -12,8 +12,8 @@ sequence$
 	.pipe(
 		switchMap(([, x]) => {
 			return of(x).pipe(
-				map((x) => {
-					return (x as any).toUpperCase();
+				map((_x) => {
+					return (_x as any).toUpperCase();
 					// try {
 					// 	return (x as any).toUpperCase();
 					// } catch (err) {
